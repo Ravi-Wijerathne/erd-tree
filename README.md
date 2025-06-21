@@ -1,4 +1,3 @@
-
 ---
 
 # Directory Tree Generator
@@ -14,9 +13,13 @@ The **Directory Tree Generator** is a lightweight Python-based tool designed to 
   - Plain Text: Simple indented structure.
   - Markdown: Uses bullet points (`-`) for hierarchy.
   - HTML: Generates a styled HTML document with proper indentation.
+- **User-Friendly GUI**: A graphical interface with:
+  - **Live Preview**: See a preview of the generated tree before saving.
+  - **Dark Mode**: Switch between light and dark themes.
+  - **Customizable Indentation**: Adjust the indentation level for the tree output.
+  - **Progress Bar**: Visual feedback during tree generation.
 - **Timestamped Output Files**: Each generated file includes a timestamp in its name for easy identification.
 - **Context Menu Integration**: Adds a "Generate Directory Tree" option to the Windows context menu for quick access.
-- **User-Friendly GUI**: A graphical interface allows users to select folders, choose output formats, and manage context menu entries.
 - **Error Handling**: Handles invalid directories, permission errors, and other exceptions gracefully.
 
 ---
@@ -63,8 +66,9 @@ The **Directory Tree Generator** is a lightweight Python-based tool designed to 
 1. Launch the tool by running the executable or Python script.
 2. Click **Browse** to select the folder whose structure you want to generate.
 3. Choose the desired output format (Plain Text, Markdown, or HTML).
-4. Click **Generate Tree** to create the directory tree file.
-5. The generated file will be saved in the selected folder with a timestamped filename (e.g., `Semester_tree_20231005_143022.txt`).
+4. (Optional) Adjust the **Indentation Level** using the slider.
+5. Click **Generate Tree** to create the directory tree file. A preview will be shown in the GUI.
+6. The generated file will be saved in the selected folder with a timestamped filename (e.g., `Semester_tree_20231005_143022.txt`).
 
 ### Using the Context Menu
 1. Add the context menu entry:
