@@ -32,7 +32,7 @@ The **Directory Tree Generator** is a lightweight Python-based tool designed to 
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Ravi-Wijerathne/erd-tree.git
-   cd directory-tree-generator
+   cd erd-tree
    ```
 
 2. **Install Dependencies**:
