@@ -1,0 +1,39 @@
+# Build artifacts
+dist/
+build/
+*.spec
+*.exe
+*.dmg
+*.app/
+*.tar.gz
+*.deb
+*.rpm
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# Installer files
+installer.nsi
+*.nsi
