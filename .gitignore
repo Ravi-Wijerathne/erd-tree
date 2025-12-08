@@ -37,3 +37,6 @@ Thumbs.db
 # Installer files
 installer.nsi
 *.nsi
+
+release
+build_portable.bat
