@@ -56,23 +56,6 @@ def test_tree_generation():
             print("✗ Tree generation failed")
             return False
 
-def test_context_menu_functions():
-    """Test that context menu functions exist and don't crash"""
-    try:
-        # These should not crash, even if they don't actually work
-        if dir_tree.CURRENT_OS == "windows":
-            print("✓ Windows context menu functions available")
-        elif dir_tree.CURRENT_OS == "linux":
-            print("✓ Linux context menu functions available")
-        elif dir_tree.CURRENT_OS == "darwin":
-            print("✓ macOS context menu functions available")
-        else:
-            print(f"✓ Context menu functions available for {dir_tree.CURRENT_OS}")
-        return True
-    except Exception as e:
-        print(f"✗ Context menu function test failed: {e}")
-        return False
-
 def main():
     """Run all tests"""
     print("Running Directory Tree Generator Tests...")
@@ -81,7 +64,6 @@ def main():
     tests = [
         ("OS Detection", test_os_detection),
         ("Tree Generation", test_tree_generation),
-        ("Context Menu Functions", test_context_menu_functions),
     ]
 
     passed = 0

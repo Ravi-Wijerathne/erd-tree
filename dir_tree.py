@@ -8,17 +8,6 @@ from datetime import datetime
 # Platform detection
 CURRENT_OS = platform.system().lower()
 
-# Platform-specific imports
-if CURRENT_OS == "windows":
-    try:
-        import winreg
-    except ImportError:
-        winreg = None
-elif CURRENT_OS == "linux":
-    pass  # No special imports needed for Linux
-elif CURRENT_OS == "darwin":  # macOS
-    pass  # No special imports needed for macOS
-
 # Try to import updater
 try:
     from updater import check_for_updates_gui
@@ -61,171 +50,6 @@ def generate_tree(start_path, output_file, format="text"):
         print(f"Error: {e}")
         return False
 
-def add_context_menu_windows():
-    if winreg is None:
-        messagebox.showerror("Error", "winreg module not available")
-        return
-    
-    key_path = r"Directory\\shell\\GenerateTree"
-    command = f'"{sys.executable}" "{os.path.abspath(__file__)}" "%1"'
-    
-    try:
-        # Create context menu entry
-        with winreg.CreateKey(winreg.HKEY_CLASSES_ROOT, key_path) as key:
-            winreg.SetValueEx(key, "", 0, winreg.REG_SZ, "Generate Directory Tree")
-        
-        # Create command entry
-        with winreg.CreateKey(winreg.HKEY_CLASSES_ROOT, key_path + "\\command") as key:
-            winreg.SetValueEx(key, "", 0, winreg.REG_SZ, command)
-        
-        messagebox.showinfo("Success", "Context menu entry added. Right-click any folder to generate tree.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to add context menu entry: {e}")
-
-def remove_context_menu_windows():
-    if winreg is None:
-        messagebox.showerror("Error", "winreg module not available")
-        return
-    
-    try:
-        key_path = r"Directory\\shell\\GenerateTree"
-        winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT, key_path + "\\command")
-        winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT, key_path)
-        messagebox.showinfo("Success", "Context menu entry removed successfully.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to remove context menu entry: {e}")
-
-def add_context_menu_linux():
-    # Create .desktop file for Nautilus/GNOME context menu integration
-    desktop_file_content = f"""[Desktop Entry]
-Version=1.0
-Type=Application
-Name=Generate Directory Tree
-Comment=Generate directory tree structure
-Exec={sys.executable} {os.path.abspath(__file__)} %F
-Icon=folder
-Terminal=false
-MimeType=inode/directory;
-"""
-    
-    # Create directory if it doesn't exist
-    desktop_dir = os.path.expanduser("~/.local/share/applications")
-    os.makedirs(desktop_dir, exist_ok=True)
-    
-    desktop_file_path = os.path.join(desktop_dir, "generate-directory-tree.desktop")
-    
-    try:
-        with open(desktop_file_path, 'w', encoding='utf-8') as f:
-            f.write(desktop_file_content)
-        
-        # Make the file executable
-        os.chmod(desktop_file_path, 0o755)
-        
-        messagebox.showinfo("Success", f"Context menu integration added.\n.desktop file created at: {desktop_file_path}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to create .desktop file: {e}")
-
-def remove_context_menu_linux():
-    desktop_file_path = os.path.expanduser("~/.local/share/applications/generate-directory-tree.desktop")
-    
-    try:
-        if os.path.exists(desktop_file_path):
-            os.remove(desktop_file_path)
-            messagebox.showinfo("Success", "Context menu integration removed.")
-        else:
-            messagebox.showwarning("Warning", ".desktop file not found.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to remove .desktop file: {e}")
-
-def add_context_menu_macos():
-    # Create plist file for Finder context menu integration
-    plist_content = f"""<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleIdentifier</key>
-    <string>com.directorytree.generator</string>
-    <key>CFBundleName</key>
-    <string>Generate Directory Tree</string>
-    <key>NSPrincipalClass</key>
-    <string>DirectoryTreeGenerator</string>
-    <key>NSServices</key>
-    <array>
-        <dict>
-            <key>NSMenuItem</key>
-            <dict>
-                <key>default</key>
-                <string>Generate Directory Tree</string>
-            </dict>
-            <key>NSMessage</key>
-            <string>generateTree</string>
-            <key>NSPortName</key>
-            <string>DirectoryTreeGenerator</string>
-            <key>NSRequiredContext</key>
-            <dict>
-                <key>NSTextContent</key>
-                <string>FilePath</string>
-            </dict>
-            <key>NSSendTypes</key>
-            <array>
-                <string>NSFilenamesPboardType</string>
-            </array>
-        </dict>
-    </array>
-</dict>
-</plist>
-"""
-    
-    plist_dir = os.path.expanduser("~/Library/Services")
-    os.makedirs(plist_dir, exist_ok=True)
-    
-    plist_file_path = os.path.join(plist_dir, "Generate Directory Tree.workflow/Contents/Info.plist")
-    os.makedirs(os.path.dirname(plist_file_path), exist_ok=True)
-    
-    try:
-        with open(plist_file_path, 'w', encoding='utf-8') as f:
-            f.write(plist_content)
-        
-        messagebox.showinfo("Success", f"Context menu integration added.\nService created at: {plist_file_path}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to create service: {e}")
-
-def remove_context_menu_macos():
-    plist_file_path = os.path.expanduser("~/Library/Services/Generate Directory Tree.workflow/Contents/Info.plist")
-    
-    try:
-        if os.path.exists(plist_file_path):
-            os.remove(plist_file_path)
-            # Remove the workflow directory if empty
-            workflow_dir = os.path.dirname(os.path.dirname(plist_file_path))
-            if os.path.exists(workflow_dir) and not os.listdir(workflow_dir):
-                os.rmdir(workflow_dir)
-            messagebox.showinfo("Success", "Context menu integration removed.")
-        else:
-            messagebox.showwarning("Warning", "Service file not found.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to remove service: {e}")
-
-def add_context_menu():
-    if CURRENT_OS == "windows":
-        return add_context_menu_windows()
-    elif CURRENT_OS == "linux":
-        return add_context_menu_linux()
-    elif CURRENT_OS == "darwin":
-        return add_context_menu_macos()
-    else:
-        messagebox.showerror("Error", f"Context menu integration not supported on {CURRENT_OS}")
-
-def remove_context_menu():
-    if CURRENT_OS == "windows":
-        return remove_context_menu_windows()
-    elif CURRENT_OS == "linux":
-        return remove_context_menu_linux()
-    elif CURRENT_OS == "darwin":
-        return remove_context_menu_macos()
-    else:
-        messagebox.showerror("Error", f"Context menu integration not supported on {CURRENT_OS}")
-
 def gui():
     def browse_folder():
         folder_selected = filedialog.askdirectory()
@@ -266,7 +90,6 @@ Python: {sys.version.split()[0]}
 
 Features:
 • Generate directory trees in multiple formats
-• Cross-platform context menu integration
 • Command-line interface
 • Portable executable available
 
@@ -312,8 +135,6 @@ For more information, visit the project repository."""
     tk.Radiobutton(root, text="HTML", variable=format_var, value="html").pack(anchor="w")
 
     tk.Button(root, text="Generate Tree", command=generate).pack(pady=20)
-    tk.Button(root, text="Add Context Menu Entry", command=add_context_menu).pack(side="left", padx=10)
-    tk.Button(root, text="Remove Context Menu Entry", command=remove_context_menu).pack(side="right", padx=10)
 
     root.mainloop()
 
@@ -329,8 +150,6 @@ Examples:
   python dir_tree.py /path/to/directory -f markdown       # Generate markdown tree
   python dir_tree.py /path/to/directory -o output.txt     # Specify output file
   python dir_tree.py /path/to/directory --no-gui          # Force CLI mode
-  python dir_tree.py --setup-context-menu                 # Setup context menu
-  python dir_tree.py --remove-context-menu                # Remove context menu
         """
     )
     
@@ -344,37 +163,8 @@ Examples:
     parser.add_argument("--no-gui", 
                        action="store_true",
                        help="Force CLI mode even if GUI is available")
-    parser.add_argument("--setup-context-menu",
-                       action="store_true", 
-                       help="Setup context menu integration for current platform")
-    parser.add_argument("--remove-context-menu",
-                       action="store_true",
-                       help="Remove context menu integration")
     
     args = parser.parse_args()
-    
-    # Handle context menu setup/removal
-    if args.setup_context_menu:
-        if CURRENT_OS == "windows":
-            add_context_menu_windows()
-        elif CURRENT_OS == "linux":
-            add_context_menu_linux()
-        elif CURRENT_OS == "darwin":
-            add_context_menu_macos()
-        else:
-            print(f"Context menu integration not supported on {CURRENT_OS}")
-        sys.exit(0)
-    
-    if args.remove_context_menu:
-        if CURRENT_OS == "windows":
-            remove_context_menu_windows()
-        elif CURRENT_OS == "linux":
-            remove_context_menu_linux()
-        elif CURRENT_OS == "darwin":
-            remove_context_menu_macos()
-        else:
-            print(f"Context menu integration not supported on {CURRENT_OS}")
-        sys.exit(0)
     
     # Handle directory tree generation
     if args.directory:
