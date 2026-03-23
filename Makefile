@@ -17,17 +17,17 @@ clean:
 # Build portable executable
 portable:
 	@echo "Building portable executable..."
-	@python build.py --portable-only
+	@python scripts/build.py --portable-only
 
 # Build installer for current platform
 installer:
 	@echo "Building installer..."
-	@python build.py --installer-only
+	@python scripts/build.py --installer-only
 
 # Windows-specific builds
 windows: clean
 	@echo "Building for Windows..."
-	@python build.py --portable-only
+	@python scripts/build.py --portable-only
 	@if command -v makensis >/dev/null 2>&1; then \
 		echo "Building Windows installer..."; \
 		makensis installer.nsi; \
@@ -38,16 +38,16 @@ windows: clean
 # Linux-specific builds
 linux: clean
 	@echo "Building for Linux..."
-	@python build.py --portable-only
+	@python scripts/build.py --portable-only
 	@echo "Building Linux packages..."
-	@python build.py --installer-only
+	@python scripts/build.py --installer-only
 
 # macOS-specific builds
 macos: clean
 	@echo "Building for macOS..."
-	@python build.py --portable-only
+	@python scripts/build.py --portable-only
 	@echo "Building macOS app bundle..."
-	@python build.py --installer-only
+	@python scripts/build.py --installer-only
 
 # Development setup
 setup:
@@ -59,7 +59,7 @@ setup:
 test: clean
 	@echo "Running test build..."
 	@python -c "import dir_tree; print('Basic import test passed')"
-	@python -c "import updater; print('Updater import test passed')"
+	@python -c "from scripts import updater; print('Updater import test passed')"
 	@echo "Basic tests passed!"
 
 # Create release package

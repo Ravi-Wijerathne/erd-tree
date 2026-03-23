@@ -14,7 +14,8 @@ NC='\033[0m' # No Color
 
 # Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$ROOT_DIR"
 
 # Log functions
 log_info() {
@@ -191,15 +192,15 @@ fi
 # 8. Verify main script exists
 log_info "Checking main script..."
 if [ ! -f "dir_tree.py" ]; then
-    log_error "dir_tree.py not found in $SCRIPT_DIR"
+    log_error "dir_tree.py not found in $ROOT_DIR"
     exit 1
 fi
 log_success "Main script found"
 
 # 9. Check for updates (if updater is available)
-if [ -f "updater.py" ]; then
+if [ -f "scripts/updater.py" ]; then
     log_info "Checking for updates..."
-    python -c "from updater import check_for_updates_gui; check_for_updates_gui()" 2>/dev/null || true
+    python -c "from scripts.updater import check_for_updates_gui; check_for_updates_gui()" 2>/dev/null || true
 fi
 
 # 10. Launch the application

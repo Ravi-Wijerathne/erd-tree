@@ -11,6 +11,9 @@ import subprocess
 import shutil
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+
 def run_command(cmd, cwd=None):
     """Run a command and return success status"""
     try:
@@ -268,6 +271,8 @@ cd "$DIR"
 def main():
     """Main build function"""
     import argparse
+
+    os.chdir(PROJECT_ROOT)
 
     parser = argparse.ArgumentParser(description="Build Directory Tree Generator")
     parser.add_argument("--portable-only", action="store_true",

@@ -10,10 +10,15 @@ CURRENT_OS = platform.system().lower()
 
 # Try to import updater
 try:
-    from updater import check_for_updates_gui
+    from scripts.updater import check_for_updates_gui
     UPDATER_AVAILABLE = True
 except ImportError:
-    UPDATER_AVAILABLE = False
+    try:
+        # Backward compatibility for older layouts
+        from updater import check_for_updates_gui
+        UPDATER_AVAILABLE = True
+    except ImportError:
+        UPDATER_AVAILABLE = False
 
 def generate_tree(start_path, output_file, format="text"):
     try:

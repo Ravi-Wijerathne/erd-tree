@@ -18,7 +18,8 @@ A cross-platform tool for generating visual directory tree structures.
 ### Automated Startup (Recommended)
 
 ```bash
-./start.sh
+./scripts/start.sh    # Bash (Linux/macOS)
+./scripts/start.py    # Python (Cross-platform)
 ```
 
 The startup script automatically checks and installs all prerequisites, then launches the application.
@@ -51,7 +52,8 @@ git clone https://github.com/Ravi-Wijerathne/erd-tree.git
 cd erd-tree
 
 # Use automated startup script
-./start.sh
+./scripts/start.sh    # Bash (Linux/macOS)
+./scripts/start.py    # Python (Cross-platform)
 
 # Or install manually
 pip install -r requirements.txt
@@ -87,7 +89,7 @@ python dir_tree.py /path/to/directory --no-gui
 
 ### GUI
 
-1. Launch `python dir_tree.py` or `./start.sh`
+1. Launch `python dir_tree.py` or use the startup script (`./scripts/start.sh` / `./scripts/start.py`)
 2. Click **Browse** to select folder
 3. Choose output format
 4. Click **Generate Tree**
@@ -119,7 +121,7 @@ python dir_tree.py /path/to/directory --no-gui
 pip install pyinstaller
 
 # Build executable
-python build.py --portable-only
+python scripts/build.py --portable-only
 ```
 
 The executable will be in the `dist/` folder.
