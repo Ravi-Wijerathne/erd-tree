@@ -102,44 +102,87 @@ For more information, visit the project repository."""
         
         messagebox.showinfo("About", about_text)
 
+    def on_mousewheel(event):
+        canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+    def on_frame_configure(event):
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
     root = tk.Tk()
     root.title(f"Directory Tree Generator - {CURRENT_OS.title()}")
-    root.geometry("400x250")
+    root.geometry("450x380")
+    root.minsize(350, 300)
 
-    # Create menu bar
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+
+    canvas = tk.Canvas(root, highlightthickness=0)
+    scrollbar = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas)
+
+    scrollable_frame.bind("<Configure>", on_frame_configure)
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+    
+    canvas.pack(side="left", fill="both", expand=True, padx=(5, 0), pady=5)
+    scrollbar.pack(side="right", fill="y", padx=0, pady=5)
+
+    root.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+
     menubar = tk.Menu(root)
     root.config(menu=menubar)
 
-    # File menu
     file_menu = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label="File", menu=file_menu)
     file_menu.add_command(label="Exit", command=root.quit)
 
-    # Tools menu
     tools_menu = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label="Tools", menu=tools_menu)
     tools_menu.add_command(label="Check for Updates", command=check_for_updates)
 
-    # Help menu
     help_menu = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label="Help", menu=help_menu)
     help_menu.add_command(label="About", command=show_about)
 
     folder_path = tk.StringVar()
 
-    folder_path = tk.StringVar()
+    folder_frame = tk.Frame(scrollable_frame)
+    folder_frame.pack(fill="x", padx=10, pady=(15, 5))
+    
+    tk.Label(folder_frame, text="Select Folder:", font=("Segoe UI", 10, "bold")).pack(anchor="w")
+    
+    path_frame = tk.Frame(folder_frame)
+    path_frame.pack(fill="x", pady=(8, 0))
+    
+    path_entry = tk.Entry(path_frame, textvariable=folder_path, font=("Segoe UI", 9))
+    path_entry.pack(side="left", fill="x", expand=True, pady=4)
+    
+    browse_btn = tk.Button(path_frame, text="Browse", command=browse_folder, font=("Segoe UI", 9))
+    browse_btn.pack(side="left", padx=(8, 0), pady=2)
 
-    tk.Label(root, text="Select Folder:").pack(pady=5)
-    tk.Entry(root, textvariable=folder_path, width=50).pack(pady=5)
-    tk.Button(root, text="Browse", command=browse_folder).pack(pady=5)
-
-    tk.Label(root, text="Output Format:").pack(pady=5)
+    format_frame = tk.Frame(scrollable_frame)
+    format_frame.pack(fill="x", padx=10, pady=(15, 5))
+    
+    tk.Label(format_frame, text="Output Format:", font=("Segoe UI", 10, "bold")).pack(anchor="w")
+    
+    format_inner = tk.Frame(format_frame)
+    format_inner.pack(anchor="w", pady=(8, 0))
+    
     format_var = tk.StringVar(value="text")
-    tk.Radiobutton(root, text="Plain Text", variable=format_var, value="text").pack(anchor="w")
-    tk.Radiobutton(root, text="Markdown", variable=format_var, value="markdown").pack(anchor="w")
-    tk.Radiobutton(root, text="HTML", variable=format_var, value="html").pack(anchor="w")
+    
+    for fmt, label in [("text", "Plain Text"), ("markdown", "Markdown"), ("html", "HTML")]:
+        rb = tk.Radiobutton(format_inner, text=label, variable=format_var, value=fmt, 
+                          font=("Segoe UI", 9), anchor="w")
+        rb.pack(fill="x", pady=1)
 
-    tk.Button(root, text="Generate Tree", command=generate).pack(pady=20)
+    separator = tk.Frame(scrollable_frame, height=2, bd=1, relief="sunken")
+    separator.pack(fill="x", padx=10, pady=15)
+
+    generate_btn = tk.Button(scrollable_frame, text="Generate Tree", command=generate, 
+                            font=("Segoe UI", 10, "bold"), bg="#4CAF50", fg="white",
+                            activebackground="#45a049", cursor="hand2", pady=6)
+    generate_btn.pack(fill="x", padx=10, pady=(5, 15))
 
     root.mainloop()
 
